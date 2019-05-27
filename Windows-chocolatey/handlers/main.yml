@@ -1,0 +1,4 @@
+---
+# handlers file for Windows-chocolatey
+- name: set shell memory
+  win_shell: set-item wsman:localhost\Shell\MaxMemoryPerShellMB {{shell_mem_size.stdout_lines[0]}}

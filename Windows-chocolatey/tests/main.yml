@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  temote_user: root
+  roles:
+    - install_choco_pacages

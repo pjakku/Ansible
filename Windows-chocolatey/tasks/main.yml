@@ -1,0 +1,46 @@
+---
+# tasks file for Windows-chocolatey
+# -name: Get existing Powershell memory per shell
+# win_shell: (get-item wsman: Local host\shell\MaxMemorypershellMB | select-object -property.) value
+# register: shell_size
+
+# -name: register current Powershell memory limit
+# set_facts:
+# current_shell_mem_size: "{{shell_mem_size.stout_lines[0[}}"
+
+- name: Set Powershell memory allowance to {{ item.memory_size }}MB
+  win_shell: set-item wsman:localhost\shell\MaxMemorypershellMB {{ item.memory_size }}
+  
+- name: "Installing Package : {{ item.package_name }}, Version : {{ item.package_version }}, admin : {{ item.install_as_admin }}"
+  win_chocolatey:
+    name: "{{ item.packages_name }}"
+    version: "{{ item.package_version }}"
+    state: present
+    force: "{{ item.package_force }}"
+  become: "{{ item.install_as_admin }}"
+  when: item.input_params is not defined or item.input_params == ""
+# notify:
+#   - set shell memory
+ 
+- name: "Installing Package : {{ item.package_name }}, Version : {{ item.package_version }}, admin : {{ item.install_as_admin }}, Parameters : {{ item.input_params }}"
+  win_chocolatey:
+    name: "{{ item.packages_name }}"
+    version: "{{ item.package_version }}"
+    state: present
+    force: "{{ item.package_force }}"
+    params: "{{ item.input_params }}"
+  become: "{{ item.install_as_admin }}"
+  when: item.input_params is not defined or item.input_params != ""
+# notify
+#   - set shell memory
+
+- name: Reboot Severver when required
+  win_reboot:
+    reboot_timeout: 60
+  ignore_errors: true
+
+- name: Waiting for server connectivity after rebbot
+  waite_for_connectivity
+    delay: 60
+    timeout: 300
+  when: item.reboot_flag == "true"

@@ -1,0 +1,13 @@
+---
+# tasks file for Windows-Command
+- name: windows command
+  win_command: "{{ item.command }}"
+  args:
+  chdir: "{{ item.path }}"
+ with_item: "{{command_list }}"
+ when: chdir is defined
+ 
+-name: windows command
+ win_command: "{{ item.command }}"
+ with_item: "{{command_list }}"
+ when: chdir is not defined

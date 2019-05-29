@@ -1,0 +1,7 @@
+---
+# role to execute powershell commands or powershell scripts
+
+- name: 'executes powershell commands or powershell scripts'
+  hosts: all
+  roles:
+    - { role: "{{ playbook_dir }}", become: yes }

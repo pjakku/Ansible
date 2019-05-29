@@ -1,0 +1,16 @@
+---
+# tasks file for Windows-Shell
+- name: run powershell commands or powershell scripts
+  win_shell: "{{ item.command_name }}"
+  with_items: "{{ list }}"
+  when: chdir and executable are not present
+  
+
+- name: run powershell commands or powershell scripts
+  win_shell: "{{ item.command_name }}"
+  args:
+   chdir: "{{ item.path }}"
+   executable: "{{ item.executable }}"
+  with_items: "{{ list }}"
+  when: chdir and executable are present
+...

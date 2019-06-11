@@ -1,0 +1,14 @@
+---
+# tasks file for Linux-Yum-Install
+- name: install rpm packages
+  yum:
+    name: "{{ item }}"
+	state: installed
+	validate_cert: false
+  with_items: "{{ rpms_list }}"
+  become: true
+
+- name: Run updatedb for locate command
+  command: /usr/bin/updatedb
+  ignore_errors: yes
+  when: '"mlocate.x86_64" in rpm_list'

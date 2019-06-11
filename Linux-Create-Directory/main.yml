@@ -1,0 +1,6 @@
+---
+- name: 'create Directory'
+  hosts: all
+  tasks:
+    - include_tasks: ./task/main.yml
+

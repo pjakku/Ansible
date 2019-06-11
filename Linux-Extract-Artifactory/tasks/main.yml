@@ -1,0 +1,58 @@
+---
+# tasks file for Linux-Extract-Artifactory
+
+---
+- name: Get app directory structure
+  set_fact:
+    artifactory_link: "https://arifactory/.../.."
+
+- name: Check if "{{ target_dir }}" exists
+  stat:
+    path: "{{ target_dir }}"
+  register: if_target_dir_exists
+
+- name: Create Target Directory
+  file:
+    path: "{{ target_dir }}"
+    state: directory
+    mode: 0755
+  when: if_target_dir_exists.stat.exists == False
+
+
+- name: Check if Package already exists
+  stat:
+    path: "{{ taget_dir }}/{{ item }}"
+  register: if_package_already_exists
+  with_items: "{{ package_name }}"
+
+
+- name: Remove Old Package
+  file:
+    path: "{{ target_dir }}/{{ item.item }}"
+    state: absent
+  when: item.stat.exists == false
+  with.items: "{{ if_package_already_exists.results }}"
+
+
+- name: Download from artifactory
+  uri:
+    url: "{{ artifactory_link }}/{{ item }}"
+    dest: "{{ target_dir }}"
+    validate_certs: False
+  with_items: "{{ package_name }}"
+
+- name: Unarchive package
+  unarchive:
+    src: "{{ target_dir }}/{{ item }}"
+    dest: "{{ target_dir }}"
+    remote_src: yes
+    keep_newer: yes
+  with_items: "{{ package_name }}"
+  become: true
+
+- name: Clean up
+  file:
+    path: "{{ target_dir }}/{{ item }}"
+    state: absent
+   with_items: "{{ package_name }}"
+   ignore_errors: true

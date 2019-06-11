@@ -1,0 +1,96 @@
+Step-1
+To create the folder structure for the Choco package, navigate to the path where you want the structure to be created and exectuted the following command from powershell prompt.
+Choco new <package name>
+
+This command will create basic structure of choco package which contains the tools folder and xxx.nuspec file.
+Under the tools folder bellow files are available.
+•	Chocolateyinstall
+•	Chocolateyuninstall
+•	Chocolateybeforemodify
+•	License
+•	Verification
+
+We will be concentrating only on the install and uninstall files in the tools folder.
+
+Step-2 Paste required exe or msi binary files
+Copy the required setup files under tools folder.
+
+Step-3 Edit Chocolateyinstall file:
+
+•	Bellow details should be available in chocolateyinstall.ps1 file.
+•	Highlighted details need to be updated as per the application.
+•	If the client requests the software to be installed. In a directory, check on the install directory parameter and provide it in the silent arguments.
+•	Following script installs the software in the D drive id D drive exists in server else install in the C drive.
+$ErrorActionPreference=’Stop’
+
+$packageName=$env:ChocolateyPackageName
+$toolsDir=”$Split-path -parent$Myinvocation.Mycommand.Defination)”
+If ((Test-path d:\)-eq “True”){
+    $DataDrive=”d:”
+} else {DataDrive=”c:”}
+$fileLocation=join-Path $toolsDir ‘applicationname.msi’
+$pacakageargs=@{
+   packageName        =$PackageName
+   unzipLocation        =$toolsDir
+   filetype                    =$’MSI or exe’
+   softwareName       =ApplicationName*’
+   file                            =$fileLocation
+   checksumType64=’sha256’
+   silentArgs             =’need to update silent arguments as per the application’
+validExitCodes=@(0,3010,1641)
+}
+Install-ChocolateyInstallPackage@packageArgs
+
+
+
+Note: To get checksun64 right click the application exe or msi file, select SHA-256 under CRC SHA. Not all servers will support this checksum verification. Hence if you are not able to find the option in one server try another server.
+
+
+Step-4  Edit chocolateyuninstall file
+ 
+Update Chocolateyuninstall.ps1 with reference to the uninstallation parameters of the setup. Because the uninstallation metod varies for each application.
+
+Step-5 Edit .nuspec file 
+
+•	Bellow details should be available in .nuspec file.
+•	Highlighted details need to be updated as per the application.
+
+<?xml version=”1.0”?>
+<packagexmlns=http://schmas.microsoft.com/packageing/2010/07/nuspec.xsd>
+<metadata>
+<id>PackageName</id>
+<version>PackageVersion</version>
+<title>Python(install)</title>
+<authors>Package name Software Foundation</authors>
+<owners>Package name Software Foundation</owners>
+<licenseURL>https://<mention the home url of the software>/</licenceUrl>
+<projectUrl>https://<mention the home url of the software>/</projecturl>
+<requireLicenseAcceptance>false</requireLicenceAcceptance>
+<description>Package name & Version</description>
+<summary>Package name</summary>
+<tags> Package name admin</tags>
+<packageSourceUrl>Source link>
+</metadata>
+</package>
+
+
+
+Step-6: Create Choco Package
+
+Verify once if the following steps have been completed:
+•	Exe or MSI file should be copied to the tools folder.
+•	Update chocolateyinstall.ps1 and .nuspec file as mentioned above.
+
+Once the verification is complete:
+Run the bellow command from the path where you want the choco package to be created.
+Choco pack <complete path of the .nuspec file(along with the filename and extension)>
+
+Waite for the command to complete the execution. Now you can find a package has been created with the name and version mentioned in the .nuspec file with nupkg extension.
+
+Eg: dotnet.4.7.2.nupkg
+To test the choco package create a local repo in the test server and try installing the choco package using the following command.
+
+Choco install <softwarename(without the version)> -y -params”<parameter details if any>”
+
+Author:
+Praveen Jakku

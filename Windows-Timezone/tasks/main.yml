@@ -1,0 +1,5 @@
+---
+# tasks file for Windows-Timezone
+- name: set timezone to "{{ time_zone }}"
+  win_timezone:
+    timezone: "{{ time_zone }}"

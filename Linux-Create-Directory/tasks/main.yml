@@ -1,0 +1,26 @@
+---
+# tasks file for Linux-Create-Directory
+- name: Check if "{{ item.directory_structure }}" exists
+  stat:
+    path: "{{ item.directory_structure }}"
+  register: targetdir_exists
+  with_items: "{{ targetdir_lists }}"
+
+- name: Create Target Directory
+  file:
+    path: "{{ item.item.directory_structure }}"
+    state: directory
+    mode: "{{ item.item.dir_permission }}"
+  when: item.stat.exists == False
+  with_items: "{{ targetdir_exists.results }}"
+
+- name: Update directory permission and ownership
+  file:
+    path: "{{ item.directory_structure }}"
+    state: directory
+    mode: "{{ item.dir_permission }}"
+    recurse: "{{ item.dir_recursive }}"
+    owner: "{{ item.dir_user_name }}"
+    group: "{{ item.dir_group_name }}"
+  ignore_errors: yes
+  with_items: "{{ targetdir_lists }}"

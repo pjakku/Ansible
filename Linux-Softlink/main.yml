@@ -1,0 +1,5 @@
+---
+- name: 'Linux Soft link creation'
+  hosts: all
+  roles:
+    - role: "{{ playbook_dir }}"

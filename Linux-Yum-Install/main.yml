@@ -1,0 +1,5 @@
+---
+- name: 'Windows Command Module'
+  hosts: all
+  roles:
+     - role: "{{ playbook_dir }}"

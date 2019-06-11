@@ -1,0 +1,25 @@
+---
+# tasks file for Linux-Softlink
+- name: validating target path exists
+  stat:
+    path: "{{ target_name }}"
+  register: links
+
+- name: Create softlink from a source folder
+  file:
+    src: '{{ source_name }}'
+    dest: '{{ target_name }}'
+    state: link
+    force: True
+  when: links.stat.exists == False
+
+- name: Create softlink from a source folder
+  file:
+    src: '{{ source_name }}'
+    dest: '{{ target_name }}'
+    state: link
+    force: True
+    mode: '{{ file_permission }}'
+    owner: '{{ user_id }}'
+    group: '{{ group_id }}'
+  when: user_id is defined
